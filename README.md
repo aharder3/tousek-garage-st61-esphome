@@ -12,7 +12,7 @@ The setup allows full control of **two garage doors** directly from **Home Assis
 - AA60 ESP32 RS485 Modbus 4-Channel Relay Module https://de.aliexpress.com/item/1005009209598465.html
 - 12V DC power supply 
 - JST VH3.96 4-pin female connectors with wires  https://de.aliexpress.com/item/1005008286152035.html
-- Tousek ST-61 garage opener
+- Tousek ST-61 garage
 - Connection wires relay to the Tousek module 
  
 
