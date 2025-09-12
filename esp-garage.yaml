@@ -1,0 +1,163 @@
+esphome:
+  name: esp-garage
+  friendly_name: ESP Garage
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  ap:
+    ssid: "Esp-Garage Fallback Hotspot"
+    password: "yourPW"
+
+ota:
+  platform: esphome
+  password: !secret ota_password
+
+api:
+  encryption:
+    key: !secret api_key
+
+# Relay-Ausgänge (mit Auto-Off nach 25s)
+switch:
+  - platform: gpio
+    name: "Door right"
+    id: relay1
+    pin: GPIO23
+    on_turn_on:
+      - delay: 25s
+      - switch.turn_off: relay1
+
+  - platform: gpio
+    name: "Door left"
+    id: relay2
+    pin: GPIO5
+    on_turn_on:
+      - delay: 25s
+      - switch.turn_off: relay2
+
+  - platform: gpio
+    name: "Relay 3"
+    id: relay3
+    pin: GPIO4
+    on_turn_on:
+      - delay: 25s
+      - switch.turn_off: relay3
+
+  - platform: gpio
+    name: "Relay 4"
+    id: relay4
+    pin: GPIO13
+    on_turn_on:
+      - delay: 25s
+      - switch.turn_off: relay4
+
+
+binary_sensor:
+  - platform: gpio
+    name: "Input 1"
+    id: eingang1
+    pin:
+      number: GPIO25
+      mode: INPUT
+      inverted: false
+
+  - platform: gpio
+    name: "Input 2"
+    id: eingang2
+    pin:
+      number: GPIO26
+      mode: INPUT
+      inverted: false
+
+  - platform: gpio
+    name: "Input 3"
+    id: eingang3
+    pin:
+      number: GPIO27
+      mode: INPUT
+      inverted: false
+
+  - platform: gpio
+    name: "Input 4"
+    id: eingang4
+    pin:
+      number: GPIO33
+      mode: INPUT
+      inverted: false
+
+cover:
+  - platform: template
+    name: "Door right"
+    device_class: garage
+    open_action:
+      - switch.turn_on: relay1
+    close_action:
+      - switch.turn_on: relay1
+    stop_action:
+      - switch.turn_on: relay1
+    optimistic: false
+    assumed_state: false
+    lambda: |-
+      if (id(input1).state && id(input2).state) {
+        return 1.0f;   // offen
+      } else {
+        return 0.0f;   // geschlossen
+      }
+
+  - platform: template
+    name: "door left"
+    device_class: garage
+    open_action:
+      - switch.turn_on: relay2
+    close_action:
+      - switch.turn_on: relay2
+    stop_action:
+      - switch.turn_on: relay2
+    optimistic: false
+    assumed_state: false
+    lambda: |-
+      if (id(input3).state && id(input4).state) {
+        return 1.0f;   // open
+      } else {
+        return 0.0f;   // close
+      }
+
+
+sensor:
+  - platform: wifi_signal
+    name: "ESP WLAN-Strength"
+    update_interval: 60s
+
+  - platform: uptime
+    name: "ESP Uptime"
+    update_interval: 60s
+    unit_of_measurement: "min"
+    filters:
+      - multiply: 0.0166667
+
+# Debugging: WiFi-Informationen
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "ESP IP-Adresse"
+    ssid:
+      name: "ESP Connected WiFi"
+    bssid:
+      name: "ESP WLAN-BSSID"
+
+# LED-Status
+status_led:
+  pin:
+    number: GPIO2
+    inverted: true
+
+# Restart-Button
+button:
+  - platform: restart
+    name: "Restart ESP Garage"
