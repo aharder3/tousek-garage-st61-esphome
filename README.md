@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.svg" width="560" alt="ST-61 SMART GARAGE CONTROL logo">
+</p>
+
 # tousek-garage-st61-esphome
 # Smart Garage Control for Tousek ST-61 with ESPHome + Home Assistant
 
